@@ -159,16 +159,16 @@ def load_model(model_path=None, device='cpu'):
         if 'G_AB' in checkpoint and 'G_BA' in checkpoint:
             generator_sketch_to_photo.load_state_dict(checkpoint['G_AB'])
             generator_photo_to_sketch.load_state_dict(checkpoint['G_BA'])
-            st.success("✅ Loaded both generators (Sketch→Photo and Photo→Sketch)")
+            st.success(" Loaded both generators (Sketch→Photo and Photo→Sketch)")
         elif 'G_AB' in checkpoint:
             generator_sketch_to_photo.load_state_dict(checkpoint['G_AB'])
             generator_photo_to_sketch = None
-            st.warning("⚠️ Only Sketch→Photo generator available")
+            st.warning(" Only Sketch→Photo generator available")
         else:
             # Try to load as single generator
             generator_sketch_to_photo.load_state_dict(checkpoint)
             generator_photo_to_sketch = None
-            st.warning("⚠️ Only one generator found in checkpoint")
+            st.warning(" Only one generator found in checkpoint")
         
         generator_sketch_to_photo.eval()
         generator_sketch_to_photo.to(device)
@@ -263,7 +263,7 @@ def create_comparison_image(input_img, output_img, input_label="Input", output_l
 
 st.set_page_config(
     page_title="Bidirectional Sketch-Photo Translation",
-    page_icon="🎨",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -309,7 +309,7 @@ st.markdown("""
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>🔄 Bidirectional Sketch-Photo Translation</h1>
+    <h1> Bidirectional Sketch-Photo Translation</h1>
     <p>Transform sketches to photos OR photos to sketches using CycleGAN</p>
 </div>
 """, unsafe_allow_html=True)
@@ -319,7 +319,7 @@ with st.sidebar:
     st.markdown("## Model Selection")
     
     # Always use Hugging Face model in cloud deployment
-    st.info("📦 Using pre-trained model from Hugging Face")
+    st.info(" Using pre-trained model from Hugging Face")
     st.markdown("Model: [CycleGAN Sketch-Photo](https://huggingface.co/aneelaBashir22f3414/a3_q3_cycle_gan_final)")
     
     st.markdown("---")
@@ -378,17 +378,17 @@ if not st.session_state.model_loaded:
             st.session_state.model_loaded = True
             st.session_state.config = config
             st.session_state.history = history
-            st.success("✅ Models loaded successfully!")
+            st.success(" Models loaded successfully!")
 
 # Main content - Direction Selection
-st.markdown("## 🎯 Select Translation Direction")
+st.markdown("##  Select Translation Direction")
 
 col_dir1, col_dir2 = st.columns(2)
 
 with col_dir1:
     direction = st.radio(
         "Choose translation direction:",
-        ["🎨 Sketch → Photo", "📸 Photo → Sketch"],
+        [" Sketch → Photo", " Photo → Sketch"],
         index=0,
         horizontal=True
     )
@@ -397,12 +397,12 @@ with col_dir1:
 col1, col2 = st.columns(2)
 
 with col1:
-    if direction == "🎨 Sketch → Photo":
-        st.markdown("## ✏️ Input Sketch")
+    if direction == " Sketch → Photo":
+        st.markdown("##  Input Sketch")
         input_label = "Input Sketch"
         output_label = "Generated Photo"
     else:
-        st.markdown("## 📷 Input Photo")
+        st.markdown("##  Input Photo")
         input_label = "Input Photo"
         output_label = "Generated Sketch"
     
@@ -425,7 +425,7 @@ with col1:
             st.image(input_image, caption=input_label, use_container_width=True)
     
     elif input_method == "Use Example":
-        if direction == "🎨 Sketch → Photo":
+        if direction == " Sketch → Photo":
             example_images = {
                 "Cat Sketch": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Line_art_cat.svg/512px-Line_art_cat.svg.png",
                 "Face Sketch": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Face_sketch.svg/512px-Face_sketch.svg.png",
@@ -450,15 +450,15 @@ with col1:
             st.error(f"Could not load example image: {e}")
 
 with col2:
-    if direction == "🎨 Sketch → Photo":
-        st.markdown("## 📸 Generated Photo")
+    if direction == " Sketch → Photo":
+        st.markdown("## Generated Photo")
     else:
-        st.markdown("## ✏️ Generated Sketch")
+        st.markdown("##  Generated Sketch")
     
     if st.session_state.model_loaded and st.session_state.generator_s2p:
         if input_image is not None:
             # Select the appropriate generator
-            if direction == "🎨 Sketch → Photo":
+            if direction == " Sketch → Photo":
                 generator = st.session_state.generator_s2p
                 direction_text = "sketch to photo"
             else:
@@ -466,7 +466,7 @@ with col2:
                 direction_text = "photo to sketch"
             
             if generator is None:
-                st.error(f"❌ {direction.capitalize()} generator not available in the model checkpoint!")
+                st.error(f" {direction.capitalize()} generator not available in the model checkpoint!")
                 st.info("The model checkpoint only contains Sketch→Photo generator. Photo→Sketch translation is not available.")
             else:
                 with st.spinner(f"Translating {direction_text}..."):
@@ -481,7 +481,7 @@ with col2:
                 output_image.save(buf, format='PNG')
                 buf.seek(0)
                 st.download_button(
-                    label=f"📥 Download {output_label}",
+                    label=f" Download {output_label}",
                     data=buf,
                     file_name=f"{direction_text.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
                     mime="image/png"
@@ -498,7 +498,7 @@ with col2:
                 comparison.save(buf_comp, format='PNG')
                 buf_comp.seek(0)
                 st.download_button(
-                    label="📸 Download Comparison",
+                    label=" Download Comparison",
                     data=buf_comp,
                     file_name=f"comparison_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
                     mime="image/png"
@@ -509,19 +509,19 @@ with col2:
 
 # Model Info Section
 st.markdown("---")
-st.markdown("## 📊 Model Information")
+st.markdown("##  Model Information")
 
 col_info1, col_info2, col_info3 = st.columns(3)
 
 with col_info1:
-    st.markdown("### 🎯 Translation Modes")
+    st.markdown("###  Translation Modes")
     st.markdown("""
     - **Sketch → Photo**: Converts line drawings to realistic images
     - **Photo → Sketch**: Converts real photos to sketch-like drawings
     """)
 
 with col_info2:
-    st.markdown("### 🏗️ Architecture Details")
+    st.markdown("###  Architecture Details")
     st.markdown("""
     - **Generators**: 2 ResNet-based (6 blocks each)
     - **Input Size**: 128×128 pixels
@@ -529,7 +529,7 @@ with col_info2:
     """)
 
 with col_info3:
-    st.markdown("### 💡 Tips")
+    st.markdown("### Tips")
     st.markdown("""
     - Use clear, high-contrast images
     - Center the subject
@@ -541,7 +541,7 @@ with col_info3:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem;">
-    <p>🔄 Bidirectional Sketch-Photo Translation using CycleGAN | Powered by PyTorch & Hugging Face</p>
+    <p> Bidirectional Sketch-Photo Translation using CycleGAN | Powered by PyTorch & Hugging Face</p>
     <p style="font-size: 0.8rem;">Convert sketches ↔ photos in both directions! | Model: <a href="https://huggingface.co/aneelaBashir22f3414/a3_q3_cycle_gan_final">Hugging Face Repo</a></p>
 </div>
 """, unsafe_allow_html=True)
